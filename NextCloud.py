@@ -142,26 +142,35 @@ class Group():
 
 class User():
     #/ocs/v1.php/cloud/users
-    def addUser(self,uid,passwd):
-        msg = {'userid':uid,'password':passwd}
+    #def addUser(self,uid,passwd):
+    #    msg = {'userid':uid,'password':passwd}
+    #    return self.post(User.url + self.tojs,msg)
+    def addUser(self,uid,email,displayName='',passwd='',groups='[]'):
+        msg = {'userid':uid,'password':passwd,'email':email,'displayName':displayName,'groups':groups}
         return self.post(User.url + self.tojs,msg)
     def getUsers(self,search=None,limit=None,offset=None):
         url = User.url
         if search != None or limit != None or offset != None:
-            url+= "?"
-            added = False
+            if self.tojs == '':
+                url+="?"
+                added = False
+            else:
+                url+=self.tojs
+                added = True
             if search != None:
+                if added == True: url += "&"
                 url+="search="+search
                 added = True
             if limit != None:
-                if added == False: url += "&"
+                if added == True: url += "&"
                 url+="limit="+limit
                 added = True
             if offset != None:
-                if added == False: url += "&"
+                if added == True: url += "&"
                 url+="offset="+offset
                 added = True
-        url+= self.tojs
+        else:
+            url+= self.tojs
         return self.get(url)
     def getUser(self,uid):
         return self.get(User.url + "/" + uid + self.tojs)
